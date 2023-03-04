@@ -26,7 +26,8 @@ template with_sdk*(name: untyped, body: untyped) =
 # ENUM:<index>, since I couldn't found any way to query all names of the
 # cameras, I resorted to just return a list with the templated strings, you can
 # check after which camera you got with the `camera.info()`.
-proc detect*(sdk: Sdk, conn_type: ConnectionType, p_interface: cstring = nil): seq[string] =
+proc detect*(sdk: Sdk, conn_type: ConnectionType,
+    p_interface: cstring = nil): seq[string] =
   var count = 0
   discard detect(conn_type, p_interface, nil, count)
   for i in 0..<count:

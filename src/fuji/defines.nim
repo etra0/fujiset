@@ -64,7 +64,9 @@ proc init(h: Handle): Result {.cdecl, importc: "XSDK_Init".}
 # obtained in between..
 proc exit(): Result {.cdecl, importc: "XSDK_Exit".}
 
-proc detect(conn_type: ConnectionType, p_interface: cstring, device_name: cstring, count: var int): Result {.cdecl, importc: "XSDK_Detect".}
+proc detect(conn_type: ConnectionType, p_interface: cstring,
+    device_name: cstring, count: var int): Result {.cdecl,
+    importc: "XSDK_Detect".}
 
 proc open(name: cstring, camera_handle: var CameraHandle,
           camera_mode: var CameraModeFlags,
@@ -73,6 +75,7 @@ proc open(name: cstring, camera_handle: var CameraHandle,
 proc close(camera_handle: CameraHandle) {.cdecl, importc: "XSDK_Close".}
 
 proc device_info(camera_handle: CameraHandle,
-                 device_info: var DeviceInformation): Result {.cdecl, importc: "XSDK_GetDeviceInfo".}
+                 device_info: var DeviceInformation): Result {.cdecl,
+                     importc: "XSDK_GetDeviceInfo".}
 
 {.pop.}

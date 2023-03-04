@@ -34,14 +34,14 @@ proc `$`*(di: DeviceInformation): string =
     prod: tcstr(di.Product),
     firmw: tcstr(di.Firmware),
     dev_type: tcstr(di.DeviceType),
-    serial: tcstr(di.SerialNo),
+    # serial: tcstr(di.SerialNo),
     framework: tcstr(di.Framework),
     yno: tcstr(di.YNo),
     name: tcstr(di.DeviceName))
   result &= $smth
 
 type Result* {.pure.} = enum
-  Error = -1, Complete = 0
+  Error = -1, Success = 0
 
 type ConnectionType* {.pure.} = enum
   USB = 1, wifi_local = 0x10, wifi_ip = 0x20
@@ -83,5 +83,7 @@ proc get_apis*(camera_handle: CameraHandle, device_info: var DeviceInformation,
                num_apis: var int, api_codes: ptr APICode): Result {.cdecl,
                                                                         importc:
                                                                         "XSDK_GetDeviceInfoEx".}
+
+proc get_prop*(camera_handle: CameraHandle, api_code: int, api_param: int, output: var int): Result {.cdecl, importc: "XSDK_GetProp".}
 
 {.pop.}

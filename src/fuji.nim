@@ -1,6 +1,8 @@
 import fuji/defines
 import fuji/apis
 import std/setutils
+import std/enumutils
+import std/sets
 import os
 
 export ConnectionType
@@ -12,12 +14,12 @@ type
   Sdk* = ref SdkObj
 
 proc `=destroy`*(sdk: var SdkObj) =
-  echo "Closing SDK"
+  echo "Closing SDK\n"
   sleep(600)
   discard exit()
 
 proc init*(): Sdk =
-  if init(0) != Result.Complete:
+  if init(0) != Result.Success:
     raise newException(IOError, "Couldn't init SDK")
   result = new SdkObj
 
@@ -28,7 +30,7 @@ template with_sdk*(name: untyped, body: untyped) =
   block:
     body
   echo "Closing api"
-  if exit() != Complete:
+  if exit() != Success:
     raise newException(IOError, "Couldn't close the SDK")
 
 # detect returns a sequence with the available cameras. According to the SDK,
@@ -51,7 +53,7 @@ type
   Camera = ref CameraObj
 
 proc `=destroy`*(x: var CameraObj) =
-  echo "Destroying camera"
+  echo "Destroying camera\n"
   close(x.handle)
   # The SDK recommends us to sleep 600 ms before calling SDK_exit... *sigh*
   `=destroy`(x.sdk)
@@ -61,7 +63,7 @@ proc `$`*(x: Camera): string =
 
 proc open*(sdk: Sdk, name: string): Camera =
   result = new CameraObj
-  if open(name.cstring, result.handle, result.modes) != Result.Complete:
+  if open(name.cstring, result.handle, result.modes) != Result.Success:
     raise newException(IOError, "Something went wrong")
   result.sdk = sdk
   return result
@@ -78,6 +80,16 @@ proc get_apis*(camera: Camera): APICodeFlags =
   var container = newSeq[APICode](num_apis)
   discard get_apis(camera.handle, device_info, num_apis, addr(container[0]))
 
+  var s: HashSet[int]
+  for key in APICode.items():
+    s.incl key.int
   for flag in container:
-    if flag.int != 0:
+    if s.contains(flag.int):
       result[flag] = true
+
+proc get_prop*(camera: Camera, api_code: APICode, api_param: int): HighlightTones =
+  var output = 0
+  if get_prop(camera.handle, api_code.int, api_param, output) != Success:
+    raise newException(ValueError, "We got an error while trying to get the prop")
+
+  return output.HighlightTones

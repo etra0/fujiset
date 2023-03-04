@@ -1,5 +1,4 @@
 import fuji
-import os
 
 proc main() =
   let sdk: Sdk = init()
@@ -11,7 +10,14 @@ proc main() =
   echo "Camera info: ", camera.info()
 
   let apis = camera.get_apis()
-  echo "APIS: ", $apis
+
+  # Collect all the valid values:
+  echo "-----"
+  echo "Supported APIS: ", $apis
+  echo "-----"
+
+  let output = camera.get_prop(GetHighLightTone, 1)
+  echo "Highlight tone: ", $output
 
 when isMainModule:
   main()

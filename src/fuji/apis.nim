@@ -450,4 +450,22 @@ type
     GetApertureUnit = 0x4273,
   APICodeFlags* = set[APICode]
 
-
+  HighlightTones* = enum
+    XT4_HIGHLIGHT_TONE_M2         = -20,
+    # XT4_HIGHLIGHT_TONE_SOFT       = -20,
+    XT4_HIGHLIGHT_TONE_M1_5       = -15,
+    XT4_HIGHLIGHT_TONE_M1         = -10,
+    # XT4_HIGHLIGHT_TONE_MEDIUM_SOFT= -10,
+    XT4_HIGHLIGHT_TONE_M0_5       = -5,
+    XT4_HIGHLIGHT_TONE_0          = 0,
+    # XT4_HIGHLIGHT_TONE_STANDARD   = 0,
+    XT4_HIGHLIGHT_TONE_P0_5       = 5,
+    # XT4_HIGHLIGHT_TONE_MEDIUM_HARD= 10,
+    XT4_HIGHLIGHT_TONE_P1         = 10,
+    XT4_HIGHLIGHT_TONE_P1_5       = 15,
+    # XT4_HIGHLIGHT_TONE_HARD       = 20,
+    XT4_HIGHLIGHT_TONE_P2         = 20,
+    XT4_HIGHLIGHT_TONE_P2_5       = 25,
+    XT4_HIGHLIGHT_TONE_P3         = 30,
+    XT4_HIGHLIGHT_TONE_P3_5       = 35,
+    XT4_HIGHLIGHT_TONE_P4         = 40

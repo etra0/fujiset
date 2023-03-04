@@ -1,4 +1,5 @@
 import std/winlean
+import ./apis
 
 type
   # CameraList was yoinked from the SDK Header
@@ -58,24 +59,29 @@ type CameraModeFlags* = set[CameraMode]
 
 # init must be called before doing anything since initializes internal tables
 # of the SDK.
-proc init(h: Handle): Result {.cdecl, importc: "XSDK_Init".}
+proc init*(h: Handle): Result {.cdecl, importc: "XSDK_Init".}
 
 # before calling exit, you nmust be sure you have deleted every object you
 # obtained in between..
-proc exit(): Result {.cdecl, importc: "XSDK_Exit".}
+proc exit*(): Result {.cdecl, importc: "XSDK_Exit".}
 
-proc detect(conn_type: ConnectionType, p_interface: cstring,
+proc detect*(conn_type: ConnectionType, p_interface: cstring,
     device_name: cstring, count: var int): Result {.cdecl,
     importc: "XSDK_Detect".}
 
-proc open(name: cstring, camera_handle: var CameraHandle,
+proc open*(name: cstring, camera_handle: var CameraHandle,
           camera_mode: var CameraModeFlags,
           p_option: uint64 = 0): Result {.cdecl, importc: "XSDK_OpenEx".}
 
-proc close(camera_handle: CameraHandle) {.cdecl, importc: "XSDK_Close".}
+proc close*(camera_handle: CameraHandle) {.cdecl, importc: "XSDK_Close".}
 
-proc device_info(camera_handle: CameraHandle,
+proc device_info*(camera_handle: CameraHandle,
                  device_info: var DeviceInformation): Result {.cdecl,
                      importc: "XSDK_GetDeviceInfo".}
+
+proc get_apis*(camera_handle: CameraHandle, device_info: var DeviceInformation,
+               num_apis: var int, api_codes: ptr APICode): Result {.cdecl,
+                                                                        importc:
+                                                                        "XSDK_GetDeviceInfoEx".}
 
 {.pop.}

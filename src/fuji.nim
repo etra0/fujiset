@@ -1,15 +1,25 @@
-include "./fuji/defines.nim"
+import fuji/defines
+import fuji/apis
+import std/setutils
 import os
 
-type Sdk = object
+export ConnectionType
+export `$`
+export APICode, APICodeFlags
 
+type
+  SdkObj* = object
+  Sdk* = ref SdkObj
+
+proc `=destroy`*(sdk: var SdkObj) =
+  echo "Closing SDK"
+  sleep(600)
+  discard exit()
 
 proc init*(): Sdk =
   if init(0) != Result.Complete:
     raise newException(IOError, "Couldn't init SDK")
-
-# I think this shouldn't be necessary.
-proc `=copy`*(dest: var Sdk, source: Sdk) {.error.}
+  result = new SdkObj
 
 # Handy wrapper to make sure you're doing stuff with the SDK initializated and
 # destroyed for you.
@@ -36,8 +46,15 @@ proc detect*(sdk: Sdk, conn_type: ConnectionType,
 type
   CameraObj = object
     handle: CameraHandle
+    sdk: Sdk
     modes*: CameraModeFlags
   Camera = ref CameraObj
+
+proc `=destroy`*(x: var CameraObj) =
+  echo "Destroying camera"
+  close(x.handle)
+  # The SDK recommends us to sleep 600 ms before calling SDK_exit... *sigh*
+  `=destroy`(x.sdk)
 
 proc `$`*(x: Camera): string =
   $(x.modes)
@@ -46,13 +63,21 @@ proc open*(sdk: Sdk, name: string): Camera =
   result = new CameraObj
   if open(name.cstring, result.handle, result.modes) != Result.Complete:
     raise newException(IOError, "Something went wrong")
+  result.sdk = sdk
   return result
 
 proc info*(camera: Camera): DeviceInformation =
   discard device_info(camera.handle, result)
 
-proc `=destroy`*(x: var CameraObj) =
-  echo "Destroying camera"
-  close(x.handle)
-  # The SDK recommends us to sleep 600 ms before calling SDK_exit... *sigh*
-  sleep(600)
+proc get_apis*(camera: Camera): APICodeFlags =
+  var device_info: DeviceInformation
+  var num_apis = 0
+  discard get_apis(camera.handle, device_info, num_apis, nil)
+  if num_apis == 0:
+    raise newException(IOError, "We got 0 APIS")
+  var container = newSeq[APICode](num_apis)
+  discard get_apis(camera.handle, device_info, num_apis, addr(container[0]))
+
+  for flag in container:
+    if flag.int != 0:
+      result[flag] = true

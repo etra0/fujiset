@@ -5,6 +5,10 @@ proc main() =
   let sdk: Sdk = init()
   let cameras = sdk.detect(USB)
 
+  if cameras.len() == 0:
+    echo "No cameras were found, closing."
+    return
+
   let camera = sdk.open(cameras[0])
   echo "features: ", $(camera)
   echo "Camera info: ", camera.info()
@@ -16,7 +20,7 @@ proc main() =
   if apis.contains(requested_api):
     echo "requested_api is supported, getting the prop..."
     try:
-      let output = camera.get_prop(GetGrainEffect, 1)
+      let output = camera.get_prop(requested_api, 1)
       echo "Result: ", $output
 
       # echo "Setting provia"

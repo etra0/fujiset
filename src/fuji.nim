@@ -1,8 +1,10 @@
 import fuji/defines
 import fuji/apis
 import std/setutils
+import std/sequtils
 import std/enumutils
 import std/sets
+import std/sugar
 import os
 
 export ConnectionType
@@ -80,11 +82,13 @@ proc get_apis*(camera: Camera): APICodeFlags =
   var container = newSeq[APICode](num_apis)
   discard get_apis(camera.handle, device_info, num_apis, addr(container[0]))
 
-  var s: HashSet[int]
-  for key in APICode.items():
-    s.incl key.int
+  let valid_keys = APICode.items()
+    .to_seq()
+    .map(x => x.int)
+    .to_hash_set()
+
   for flag in container:
-    if s.contains(flag.int):
+    if valid_keys.contains(flag.int):
       result[flag] = true
 
 proc get_prop*(camera: Camera, api_code: APICode, api_param: int): int =

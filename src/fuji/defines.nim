@@ -84,6 +84,15 @@ proc get_apis*(camera_handle: CameraHandle, device_info: var DeviceInformation,
                                                                         importc:
                                                                         "XSDK_GetDeviceInfoEx".}
 
-proc get_prop*(camera_handle: CameraHandle, api_code: int, api_param: int, output: var int): Result {.cdecl, importc: "XSDK_GetProp".}
+proc get_prop*(camera_handle: CameraHandle, api_code: int, api_param: int,
+    output: var int): Result {.cdecl, importc: "XSDK_GetProp".}
+
+proc set_prop*(camera_handle: CameraHandle, api_code: int,
+    api_param: int): Result {.cdecl, importc: "XSDK_SetProp", varargs.}
+
+proc get_error*(camera_handle: CameraHandle, api_code: var APICode,
+                errno: var int): Result {.cdecl,
+                    importc: "XSDK_GetErrorNumber".}
+
 
 {.pop.}

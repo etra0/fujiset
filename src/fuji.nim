@@ -87,9 +87,22 @@ proc get_apis*(camera: Camera): APICodeFlags =
     if s.contains(flag.int):
       result[flag] = true
 
-proc get_prop*(camera: Camera, api_code: APICode, api_param: int): HighlightTones =
-  var output = 0
+proc get_prop*(camera: Camera, api_code: APICode, api_param: int): int =
+  var output: int = 0
   if get_prop(camera.handle, api_code.int, api_param, output) != Success:
     raise newException(ValueError, "We got an error while trying to get the prop")
 
-  return output.HighlightTones
+  return output
+
+proc set_prop*(camera: Camera, api_code: APICode, api_param: int, value: int) =
+  if set_prop(camera.handle, api_code.int, api_param, value) != Success:
+    raise newException(ValueError, "Couldn't set prop")
+
+proc get_error*(camera: Camera): (APICode, ErrorCode) =
+  var
+    code: APICode
+    errno: int
+
+  if get_error(camera.handle, code, errno) != Success:
+    raise newException(ValueError, "Get error went wrong")
+  return (code, errno.ErrorCode)
